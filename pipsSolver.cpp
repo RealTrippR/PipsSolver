@@ -54,6 +54,9 @@ Board setupBoard(bool* success){
     while(getline(inputFile, line)){
         vector<tuple<char, int, string>> row;
         for(char cell : line){
+            if (isalpha(cell)) {
+                cell = toupper(cell);
+            }
             row.emplace_back(cell, -1, ".");  // Initialize with -1 color and empty rule
         }
         board.push_back(row);
@@ -72,7 +75,7 @@ Board setupBoard(bool* success){
             if(isalpha(get<0>(cell)) && letterToColor.find(get<0>(cell)) == letterToColor.end()){
                 letterToColor[get<0>(cell)] = colorIndex++;
             }
-            
+
             if(isalpha(get<0>(cell))) get<1>(cell) = letterToColor[get<0>(cell)];
         }
     }
