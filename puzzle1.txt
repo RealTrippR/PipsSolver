@@ -1,6 +1,4 @@
-.abc
-defg
-ijkl
-mnop
-qrst
-uvwx
+.a_b
+.a..
+cd_.
+cee.
