@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "preLaunchTask": "build",
+            "name": "RUN",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": " ${workspaceFolder}/pipsSolver.exe",
+            "args": [""],
+            "cwd": "${workspaceFolder}",
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

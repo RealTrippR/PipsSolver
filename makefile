@@ -1,5 +1,7 @@
+DEBUG_FLAGS := -g
+
 compile:
-	g++ pipsSolver.cpp -o pipsSolver.exe
+	g++ $(DEBUG_FLAGS) pipsSolver.cpp -o pipsSolver.exe
 
 run:
 	./pipsSolver.exe

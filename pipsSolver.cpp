@@ -8,6 +8,7 @@
 #include <cctype>
 #include <chrono>
 #include <set>
+#include <array>
 using namespace std;
 
 typedef vector<vector<tuple<char, int, string>>> Board; // 2d board (rule char, color ID, rule)
@@ -15,24 +16,30 @@ typedef vector<tuple<int,int,int>> Dominos; // list of domino values and a color
 typedef vector<vector<pair<int,int>>> Solution; // 2d solution (cell value, domino color)
 typedef unordered_map<int,pair<string,vector<pair<int,int>>>> RuleMap; // color ID -> (rule, positions)
 
-const int colors[15][3] = {{0,0,255},
-                           {220,20,147},
-                           {0,255,255},
-                           {255,165,0},
-                           {0,128,255},
-                           {34,139,34},
-                           {128,0,128},
-                           {255,0,255},
-                           {0,128,128},
-                           {210,105,30},
-                           {0,255,0},
-                           {255,255,0},
-                           {128,128,0},
-                           {255,105,180},
-                           {255,215,0}};
+std::array<std::array<int,3>,15> colors = {
+    {{0,0,255},
+    {220,20,147},
+    {0,255,255},
+    {255,165,0},
+    {0,128,255},
+    {34,139,34},
+    {128,0,128},
+    {255,0,255},
+    {0,128,128},
+    {210,105,30},
+    {0,255,0},
+    {255,255,0},
+    {128,128,0},
+    {255,105,180},
+    {255,215,0}}
+};
 
 // Function to get the board rules from the user
-Board setupBoard(){
+// if success is set to false any usage of the
+// returned board is invalid and may
+// lead to undefined behavior.
+Board setupBoard(bool* success){
+    *success=true;
     // User inputs number 1-3
     string fileNum = "";
     do{
@@ -58,9 +65,14 @@ Board setupBoard(){
     int colorIndex = 0;
     for(auto& row : board){
         for(auto& cell : row){
+            if (colorIndex>=colors.size()) {
+                *success = false; // prevent out of bounds read
+                return board;
+            }
             if(isalpha(get<0>(cell)) && letterToColor.find(get<0>(cell)) == letterToColor.end()){
                 letterToColor[get<0>(cell)] = colorIndex++;
             }
+            
             if(isalpha(get<0>(cell))) get<1>(cell) = letterToColor[get<0>(cell)];
         }
     }
@@ -77,7 +89,9 @@ Board setupBoard(){
                 if(isalpha(get<0>(cell))){
                     int color = get<1>(cell);
                     cout << "\033[38;2;" << colors[color][0] << ";" << colors[color][1] << ";" << colors[color][2] << "m" << (char)(toupper(get<0>(cell))) << "\033[0m ";
-                }else cout << get<0>(cell) << " ";
+                } else {
+                     cout << get<0>(cell) << " ";
+                }
             }
             cout << endl;
         }
@@ -353,7 +367,12 @@ void solvePuzzle(const Board& board, RuleMap& ruleMap, Solution solution, Domino
 }
 
 int main(){    
-    Board board = setupBoard();
+    bool board_setup_result;
+    Board board = setupBoard(&board_setup_result);
+    if (!board_setup_result) {
+        std::cout << "Failed to setup board.";
+        return -1;
+    }
     Dominos dominos = getDominos();
 
     //print board rules
@@ -399,35 +418,6 @@ int main(){
             }
         }
     }
-
-    /* //print color id grid
-    cout << endl;
-    for(const auto& row : board){
-        for(const auto& cell : row){
-            cout << get<1>(cell) << " ";
-        }
-        cout << endl;
-    }
-
-    //print solution board
-    cout << endl;
-    for(const auto& row : solution){
-        for(const auto& cell : row){
-            cout << "(" << cell.first << ", " << cell.second << ") ";
-        }
-        cout << endl;
-    }
-
-    //print rule map
-    cout << endl;
-    for(const auto& [color, ruleInfo] : ruleMap){
-        const auto& [rule, positions] = ruleInfo;
-        cout << "Color " << color << ": " << rule << " | Positions: ";
-        for(const auto& pos : positions){
-            cout << "(" << pos.first << ", " << pos.second << ") ";
-        }
-        cout << endl;
-    } */
 
     // Recursively try each domino positioning
     auto start = std::chrono::high_resolution_clock::now();
